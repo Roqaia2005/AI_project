@@ -69,10 +69,10 @@ class GomokuBoard:
             return [(self.size // 2, self.size // 2)]
         return list(moves)
 
-
+         
     # Evaluates the board state for the given player by counting lines of consecutive stones
-    # It adds score for favorable lines and subtracts for opponent's lines.
-    # The score helps the AI algoritm determine the best move.
+    # It adds score for helpful lines and subtracts for opponent's lines.
+    # The score helps the AI algoritm determine the best move. acts as (utility)
 
     def evaluate(self, player):
         score = 0
@@ -105,7 +105,7 @@ class GomokuBoard:
 
 
 
-# function to initate ai vs ai game (minimax va alpha)
+# function to initate ai vs ai game (minimax vs alpha)
 def play_ai_vs_ai_minimax_vs_alphabeta():
     board = GomokuBoard(BOARD_SIZE)
     move_count = 0
@@ -135,7 +135,7 @@ def play_ai_vs_ai_minimax_vs_alphabeta():
         time.sleep(0.3)
 
     print("Game over! It's a draw.")
-# function to initate human vs ai game (minimax va human )
+# function to initate human vs ai game (minimax vs human )
 def play_human_vs_ai(human_player=PLAYER_X):
     board = GomokuBoard(BOARD_SIZE)
     ai_player = PLAYER_O if human_player == PLAYER_X else PLAYER_X
