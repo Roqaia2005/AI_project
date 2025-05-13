@@ -41,6 +41,7 @@ class GomokuBoard:
                         self.check_direction(x, y, 1, 1, player) or
                         self.check_direction(x, y, 1, -1, player)):
                     return True
+
         return False
 
     def check_direction(self, x, y, dx, dy, player):
@@ -101,8 +102,38 @@ class GomokuBoard:
 
 
 
+
 #implementation of  mimimax
 
+def minimax(board, depth, maximizing_player, player):
+    opponent = PLAYER_O if player == PLAYER_X else PLAYER_X
+
+    if depth == 0 or board.is_winner(player) or board.is_winner(opponent):
+        return board.evaluate(player), None
+
+    best_move = None
+    if maximizing_player:
+        max_eval = -math.inf
+        for move in board.get_valid_moves():
+            x, y = move
+            board.board[x][y] = player
+            eval_score, _ = minimax(board, depth - 1, False, player)
+            board.board[x][y] = EMPTY
+            if eval_score > max_eval:
+                max_eval = eval_score
+                best_move = move
+        return max_eval, best_move
+    else:
+        min_eval = math.inf
+        for move in board.get_valid_moves():
+            x, y = move
+            board.board[x][y] = opponent
+            eval_score, _ = minimax(board, depth - 1, True, player)
+            board.board[x][y] = EMPTY
+            if eval_score < min_eval:
+                min_eval = eval_score
+                best_move = move
+        return min_eval, best_move
 
 
 # function to initate ai vs ai game (minimax vs alpha)
@@ -116,8 +147,8 @@ def play_ai_vs_ai_minimax_vs_alphabeta():
         print(f"Turn: {current_player}")
         if current_player == PLAYER_X:
             _, move = minimax(board, depth=3, maximizing_player=True, player=current_player)
-        else:
-            _, move = alpha_beta(board, depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=current_player)
+        # else:
+        #     _, move = alpha_beta(board, depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=current_player)
 
         if move is None:
             break
