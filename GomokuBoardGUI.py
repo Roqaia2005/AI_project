@@ -4,8 +4,6 @@ import math
 import time
 import threading
 
-
-
 EMPTY = ""
 PLAYER_X = "X"
 PLAYER_O = "O"
@@ -112,7 +110,6 @@ def minimax(board, depth, maximizing_player, player):
         return min_eval, best_move
 
 
-
 def alpha_beta(board, depth, maximizing_player, player, alpha, beta):
     opponent = PLAYER_O if player == PLAYER_X else PLAYER_X
 
@@ -182,11 +179,10 @@ class GomokuGUI:
 
         for x in range(BOARD_SIZE):
             for y in range(BOARD_SIZE):
-                btn = tk.Button(board_frame, text=EMPTY, width=2, height=1,
-                                bg="#E6E6FA", font=("Helvetica", 14),  # Light purple background
-                                command=lambda x=x, y=y: self.on_cell_click(x, y))
-                btn.grid(row=x, column=y, padx=1, pady=1)
-                self.buttons[x][y] = btn
+                canvas = tk.Canvas(board_frame, width=CELL_SIZE, height=CELL_SIZE, bg="#E6E6FA")
+                canvas.grid(row=x, column=y, padx=1, pady=1)
+                self.buttons[x][y] = canvas
+                canvas.bind("<Button-1>", lambda event, x=x, y=y: self.on_cell_click(x, y))
 
     def start_game(self):
         self.board = GomokuBoard(BOARD_SIZE)
@@ -195,8 +191,8 @@ class GomokuGUI:
 
         for x in range(BOARD_SIZE):
             for y in range(BOARD_SIZE):
-                self.buttons[x][y]["text"] = EMPTY
-                self.buttons[x][y]["bg"] = "#E6E6FA"  # Light purple
+                self.buttons[x][y].delete("all")
+                self.buttons[x][y].config(bg="#E6E6FA")
 
         if self.game_mode == "ai_vs_ai":
             threading.Thread(target=self.play_ai_vs_ai).start()
@@ -211,15 +207,18 @@ class GomokuGUI:
 
     def make_move(self, x, y):
         self.board.board[x][y] = self.current_player
-        self.buttons[x][y]["text"] = self.current_player
-    
-        self.buttons[x][y]["bg"] = "#FFB6C1" if self.current_player == PLAYER_X else "#ADD8E6"
+        self.draw_circle(x, y)
 
         if self.board.is_winner(self.current_player):
             messagebox.showinfo("Game Over", f"{self.current_player} wins!")
             return
 
         self.current_player = PLAYER_O if self.current_player == PLAYER_X else PLAYER_X
+
+    def draw_circle(self, x, y):
+        canvas = self.buttons[x][y]
+        color = "#FFB6C1" if self.current_player == PLAYER_X else "#ADD8E6"
+        canvas.create_oval(5, 5, CELL_SIZE - 5, CELL_SIZE - 5, fill=color)
 
     def ai_turn(self):
         if self.current_player != self.ai_player:
