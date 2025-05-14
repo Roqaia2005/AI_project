@@ -6,18 +6,18 @@ EMPTY = "."
 PLAYER_X = "X"
 PLAYER_O = "O"
 # get dynamic size
-def get_board_size():
-    while True:
-        try:
-            size = int(input("Enter board size (e.g., 15 for 15x15 board): "))
-            if 5 <= size <= 19:
-                return size
-            else:
-                print("Please enter a size between 5 and 30.")
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
+#def get_board_size():
+    #while True:
+        #try:
+           # size = int(input("Enter board size (e.g., 15 for 15x15 board): "))
+           # if 5 <= size <= 19:
+                #return size
+            #else:
+               # print("Please enter a size between 5 and 30.")
+        #except ValueError:
+           # print("Invalid input. Please enter an integer.")
 
-BOARD_SIZE = get_board_size()
+BOARD_SIZE = 15
 WIN_LENGTH = 5
 
 class GomokuBoard:
@@ -70,7 +70,7 @@ class GomokuBoard:
             return [(self.size // 2, self.size // 2)]
         return list(moves)
 
-         
+
     # Evaluates the board state for the given player by counting lines of consecutive stones
     # It adds score for helpful lines and subtracts for opponent's lines.
     # The score helps the AI algoritm determine the best move. acts as (utility)
@@ -182,9 +182,9 @@ def play_ai_vs_ai_minimax_vs_alphabeta():
     while move_count < max_moves:
         print(f"Turn: {current_player}")
         if current_player == PLAYER_X:
-            _, move = minimax(board, depth=3, maximizing_player=True, player=current_player)
-        # else:
-        #     _, move = alpha_beta(board, depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=current_player)
+             _, move = minimax(board, depth=3, maximizing_player=True, player=current_player)
+        else:
+             _, move = alpha_beta(board, depth=3, alpha=-math.inf, beta=math.inf, maximizing_player=True, player=current_player)
 
         if move is None:
             break
@@ -275,22 +275,22 @@ if __name__ == "__main__":
 
 
 #class GomokuBoard:
- #   def __init__(self, size=15):
-  #      self.size = size
-   #     self.board = [["." for _ in range(size)] for _ in range(size)]
+#   def __init__(self, size=15):
+#      self.size = size
+#     self.board = [["." for _ in range(size)] for _ in range(size)]
 
-   # def print_board(self):
-    #    for row in self.board:
-     #       print(" ".join(row))
+# def print_board(self):
+#    for row in self.board:
+#       print(" ".join(row))
 
-   # def is_valid_move(self, row, col):
-    #    return 0 <= row < self.size and 0 <= col < self.size and self.board[row][col] == "."
+# def is_valid_move(self, row, col):
+#    return 0 <= row < self.size and 0 <= col < self.size and self.board[row][col] == "."
 
-    #def make_move(self, row, col, symbol):
-     #   if self.is_valid_move(row, col):
-      #      self.board[row][col] = symbol
-       #     return True
-        #return False
+#def make_move(self, row, col, symbol):
+#   if self.is_valid_move(row, col):
+#      self.board[row][col] = symbol
+#     return True
+#return False
 
 
 #this for testing
