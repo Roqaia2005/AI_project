@@ -5,8 +5,8 @@ import time
 import threading
 
 EMPTY = ""
-PLAYER_X = "X"
-PLAYER_O = "O"
+PLAYER_BLUE = "BLUE"
+PLAYER_PINK = "PINK"
 BOARD_SIZE = 15
 WIN_LENGTH = 5
 CELL_SIZE = 30
@@ -57,7 +57,7 @@ class GomokuBoard:
 
     def evaluate(self, player):
         score = 0
-        opponent = PLAYER_O if player == PLAYER_X else PLAYER_X
+        opponent = PLAYER_PINK if player == PLAYER_BLUE else PLAYER_BLUE
         weight = [0, 1, 10, 100, 1000, 100000]
 
         for x in range(self.size):
@@ -80,7 +80,7 @@ class GomokuBoard:
 
 
 def minimax(board, depth, maximizing_player, player):
-    opponent = PLAYER_O if player == PLAYER_X else PLAYER_X
+    opponent = PLAYER_PINK if player == PLAYER_BLUE else PLAYER_BLUE
 
     if depth == 0 or board.is_winner(player) or board.is_winner(opponent):
         return board.evaluate(player), None
@@ -111,7 +111,7 @@ def minimax(board, depth, maximizing_player, player):
 
 
 def alpha_beta(board, depth, maximizing_player, player, alpha, beta):
-    opponent = PLAYER_O if player == PLAYER_X else PLAYER_X
+    opponent = PLAYER_PINK if player == PLAYER_BLUE else PLAYER_BLUE
 
     if depth == 0 or board.is_winner(player) or board.is_winner(opponent):
         return board.evaluate(player), None
@@ -153,9 +153,9 @@ class GomokuGUI:
         self.root.title("Gomoku Game")
         self.board = GomokuBoard(BOARD_SIZE)
         self.buttons = [[None for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
-        self.current_player = PLAYER_X
-        self.human_player = PLAYER_X
-        self.ai_player = PLAYER_O
+        self.current_player = PLAYER_BLUE
+        self.human_player = PLAYER_BLUE
+        self.ai_player = PLAYER_PINK
         self.game_mode = "human_vs_ai"
 
         self.setup_ui()
@@ -170,6 +170,13 @@ class GomokuGUI:
         self.mode_var = tk.StringVar(value="human_vs_ai")
         mode_menu = tk.OptionMenu(top_frame, self.mode_var, "human_vs_ai", "ai_vs_ai")
         mode_menu.pack(side=tk.LEFT)
+
+        color_label = tk.Label(top_frame, text="Play as:")
+        color_label.pack(side=tk.LEFT, padx=5)
+
+        self.color_var = tk.StringVar(value="BLUE")
+        color_menu = tk.OptionMenu(top_frame, self.color_var, "BLUE", "PINK")
+        color_menu.pack(side=tk.LEFT)
 
         start_button = tk.Button(top_frame, text="Start Game", command=self.start_game)
         start_button.pack(side=tk.LEFT, padx=10)
@@ -186,8 +193,10 @@ class GomokuGUI:
 
     def start_game(self):
         self.board = GomokuBoard(BOARD_SIZE)
-        self.current_player = PLAYER_X
+        self.current_player = PLAYER_BLUE
         self.game_mode = self.mode_var.get()
+        self.human_player = self.color_var.get()
+        self.ai_player = PLAYER_PINK if self.human_player == PLAYER_BLUE else PLAYER_BLUE
 
         for x in range(BOARD_SIZE):
             for y in range(BOARD_SIZE):
@@ -196,6 +205,8 @@ class GomokuGUI:
 
         if self.game_mode == "ai_vs_ai":
             threading.Thread(target=self.play_ai_vs_ai).start()
+        elif self.current_player == self.ai_player:
+            self.root.after(100, self.ai_turn)
 
     def on_cell_click(self, x, y):
         if self.game_mode != "human_vs_ai":
@@ -213,11 +224,11 @@ class GomokuGUI:
             messagebox.showinfo("Game Over", f"{self.current_player} wins!")
             return
 
-        self.current_player = PLAYER_O if self.current_player == PLAYER_X else PLAYER_X
+        self.current_player = PLAYER_PINK if self.current_player == PLAYER_BLUE else PLAYER_BLUE
 
     def draw_circle(self, x, y):
         canvas = self.buttons[x][y]
-        color = "#FFB6C1" if self.current_player == PLAYER_X else "#ADD8E6"
+        color = "blue" if self.current_player == PLAYER_BLUE else "pink"
         canvas.create_oval(5, 5, CELL_SIZE - 5, CELL_SIZE - 5, fill=color)
 
     def ai_turn(self):
@@ -234,7 +245,7 @@ class GomokuGUI:
                 messagebox.showinfo("Game Over", f"{self.current_player} wins!")
                 break
 
-            if self.current_player == PLAYER_X:
+            if self.current_player == PLAYER_BLUE:
                 _, move = minimax(self.board, depth=2, maximizing_player=True, player=self.current_player)
             else:
                 _, move = alpha_beta(self.board, depth=2, maximizing_player=True,
